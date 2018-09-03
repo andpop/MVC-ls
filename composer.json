@@ -5,6 +5,7 @@
     }
   },
   "require": {
-    "twig/twig": "^2.5"
+    "twig/twig": "^2.5",
+    "vlucas/phpdotenv": "^2.5"
   }
 }
