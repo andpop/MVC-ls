@@ -5,6 +5,10 @@ use App\Core\AController;
 
 class Users extends AController
 {
+    public function showFirstScreen()
+    {
+        $this->view->twigRender('entrance', []);
+    }
 
     public function save()
     {

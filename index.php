@@ -4,7 +4,7 @@ require "vendor/autoload.php";
 const APPLICATION_PATH = __DIR__.'/';
 
 $users = new \App\Controllers\Users();
-$users->save();
+$users->showFirstScreen();
 die();
 
 
