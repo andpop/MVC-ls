@@ -7,9 +7,7 @@ class AController
 
     public function __construct()
     {
-        echo "AController constructor\n";
-//        $this->view = new View();
-
+        $this->view = new View();
     }
 
 }

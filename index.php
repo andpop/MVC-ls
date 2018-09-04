@@ -1,13 +1,16 @@
 <?php
-require_once "core/config.php";
 require "vendor/autoload.php";
+
+const APPLICATION_PATH = __DIR__.'/';
+
+$users = new \App\Controllers\Users();
+$users->save();
+die();
+
 
 //$user = new \App\Models\User();
 //$file = new \App\Models\File();
 //$user->getData();
-
-//const APPLICATION_PATH = __DIR__;
-//echo __DIR__;
 
 //echo "<pre>";
 //print_r($_SERVER);
@@ -21,8 +24,8 @@ require "vendor/autoload.php";
 
 $routes = explode('/', $_GET['route']);
 
-$controllerName = 'Main';
-$actionName = 'welcome';
+$controllerName = 'Users';
+$actionName = 'showFirstScreen';
 
 if (!empty($routes[0])) {
     $controllerName = $routes[0];
@@ -49,8 +52,6 @@ unset($paramsGET["route"]);
 //echo "GET:";
 //print_r($paramsGET);
 
-$users = new \App\Controllers\Users();
-die();
 
 try {
     if (!file_exists($fileName)) {
