@@ -5,9 +5,51 @@ use App\Core\AController;
 
 class Users extends AController
 {
-    public function showFirstScreen()
+    /**
+     * Вывод начальной формы для выбора типа входа в систему (авторизация или регистрация)
+     * @param $requestParameters
+     */
+    public function entrance($requestParameters)
     {
         $this->view->twigRender('entrance', []);
+    }
+
+    /**
+     * Вывод формы для авторизации
+     * @param $requestParameters
+     */
+    public function logon_form($requestParameters)
+    {
+        $this->view->twigRender('logon_form', []);
+    }
+
+    /**
+     * Вывод формы для регистрации
+     * @param $requestParameters
+     */
+    public function register_form($requestParameters)
+    {
+        $this->view->twigRender('register_form', []);
+    }
+
+    /**
+     * Авторизация пользователя на сайте
+     * @param $requestParameters
+     */
+    public function authorization($requestParameters)
+    {
+        echo "Попытка авторизации: user={$requestParameters['login']}, password={$requestParameters['password']}";
+
+    }
+
+    /**
+     * Регистраация пользователя на сайте
+     * @param $requestParameters
+     */
+    public function registration($requestParameters)
+    {
+        echo "Попытка регистрации: user={$requestParameters['login']}, password={$requestParameters['password']}";
+
     }
 
     public function save()

@@ -1,39 +1,20 @@
 <?php
 require "vendor/autoload.php";
+require_once 'app/Core/config.php';
 
 const APPLICATION_PATH = __DIR__.'/';
 
-$users = new \App\Controllers\Users();
-$users->showFirstScreen();
-die();
-
-
-//$user = new \App\Models\User();
-//$file = new \App\Models\File();
-//$user->getData();
-
-//echo "<pre>";
-//print_r($_SERVER);
-//echo "-----------------------------------";
-//echo "GET\n";
-//print_r($_GET);
-//echo "-----------------------------------";
-//echo "POST\n";
-//print_r($_POST);
-//echo "-----------------------------------";
-
-$routes = explode('/', $_GET['route']);
+$routes = explode('/', $_SERVER['REQUEST_URI']);
 
 $controllerName = 'Users';
-$actionName = 'showFirstScreen';
+$actionName = 'entrance';
 
-if (!empty($routes[0])) {
-    $controllerName = $routes[0];
+if (!empty($routes[1])) {
+    $controllerName = $routes[1];
 }
 
-// получаем действие
-if (!empty($routes[1])) {
-    $actionName = $routes[1];
+if (!empty($routes[2])) {
+    $actionName = $routes[2];
 }
 
 $class = ucfirst(strtolower($controllerName));
@@ -41,17 +22,8 @@ $class = ucfirst(strtolower($controllerName));
 $fileName = "app/Controllers/{$class}.php";
 $className = "App\\Controllers\\{$class}";
 
-$paramsPOST = $_POST;
-$paramsGET = $_GET;
-unset($paramsGET["route"]);
-
-//echo "file: $fileName \n";
-//echo "class: $className \n";
-//echo "POST:";
-//print_r($paramsPOST);
-//echo "GET:";
-//print_r($paramsGET);
-
+$requestParameters = $_REQUEST;
+unset($requestParameters["route"]);
 
 try {
     if (!file_exists($fileName)) {
@@ -65,7 +37,7 @@ try {
     }
 
     if (method_exists($controller, $actionName)) {
-        $controller->$actionName();
+        $controller->$actionName($requestParameters);
     } else {
         throw new Exception("Method not found");
     }

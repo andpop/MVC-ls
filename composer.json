@@ -6,6 +6,8 @@
   },
   "require": {
     "twig/twig": "^2.5",
-    "vlucas/phpdotenv": "^2.5"
+    "vlucas/phpdotenv": "^2.5",
+    "illuminate/database": "^5.5",
+    "fzaninotto/faker": "^1.8"
   }
 }
