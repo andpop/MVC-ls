@@ -1,0 +1,13 @@
+<h1>Профиль пользователя</h1>
+<form action="/users/save_profile" method="POST">
+    <input type="hidden" name="login" value="{{ login }}">
+    Имя: <input type="text" name="name" value="{{ name }}">
+    <br>
+    Возраст: <input type="number" name="age" min="1" max="120" value="{{ age }}">
+    <br>
+    О себе
+    <br>
+    <textarea name="description" cols="50" rows="6">{{ description }}</textarea>
+    <br>
+    <button type="submit">Сохранить</button>
+</form>

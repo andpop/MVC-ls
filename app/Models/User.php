@@ -14,9 +14,15 @@ class User extends Model
         return $user;
     }
 
-    public static function isUserExists($login)
+    public static function getUserByLogin($login)
     {
         $user = User::where('login', '=', $login)->first();
+        return $user;
+    }
+
+    public static function isUserExists($login)
+    {
+        $user = User::getUserByLogin($login);
 
         if ($user) return true;
         return false;

@@ -50,11 +50,10 @@ class Users extends AController
             $isAuthorized = false;
         }
         if ($isAuthorized) {
-            echo "Пользователь $login успешно авторизован";
+            $this->showProfile($login);
         } else {
             $this->view->twigRender('authorization_error', []);
         };
-//        echo "Попытка авторизации: user={$parameters['login']}, password={$parameters['password']}, в базе {$passwordinDB}";
     }
 
     /**
@@ -76,6 +75,18 @@ class Users extends AController
             $message = "При регистрации пользователя <b>{$login}</b> возникла ошибка.";
             $this->view->twigRender('registration_error', ['message' => $message]);
         };
+    }
+
+    protected function showProfile($login)
+    {
+        $user = User::getUserByLogin($login);
+        $name = $user->name;
+        $age = $user->age;
+        $description = $user->description;
+        $userId = $user->id;
+
+        $this->view->twigRender('user_profile', ['id' => $userId, 'login' => $login, 'name' => $name, 'age' => $age, 'description' => $description]);
+//        echo "Пользователь $login, $name успешно авторизован";
     }
 
 }
