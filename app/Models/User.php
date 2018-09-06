@@ -1,18 +1,17 @@
 <?php
 namespace App\Models;
 
-//class User
-//{
-//    protected $login;
-//
-//    public function __construct($login)
-//    {
-//        $this->name = $login;
-//    }
-//
-//    public function getData()
-//    {
-//        echo "Getting user data from DB\n";
-//    }
-//}
-use \Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+    protected $fillable = ['login', 'password', 'name', 'age', 'description'];
+
+    public static function createUser($login, $password, $name, $age, $description)
+    {
+        $user = User::create(['login'=>$login,'password'=>$password,'name'=>$name, 'age'=>$age, 'description'=>$description]);
+        return $user;
+    }
+
+}

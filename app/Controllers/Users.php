@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Core\AController;
+use App\Models\User as User;
 
 class Users extends AController
 {
@@ -44,12 +45,12 @@ class Users extends AController
 
     /**
      * Регистраация пользователя на сайте
-     * @param $requestParameters
+     * @param $params
      */
-    public function registration($requestParameters)
+    public function registration($params)
     {
-        echo "Попытка регистрации: user={$requestParameters['login']}, password={$requestParameters['password']}";
-
+        echo "Попытка регистрации: user={$params['login']}, password={$params['password']}";
+        $user = User::createUser($params['login'], $params['name'], $params['password'], $params['age'], $params['description']);
     }
 
     public function save()

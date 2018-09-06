@@ -1,6 +1,7 @@
 <?php
 require "vendor/autoload.php";
 require_once 'app/Core/config.php';
+require_once 'app/Core/init.php';
 
 const APPLICATION_PATH = __DIR__.'/';
 

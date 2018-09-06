@@ -5,15 +5,12 @@ $faker = Faker\Factory::create();
 
 class User extends Illuminate\Database\Eloquent\Model
 {
-//    public $login, $password, $name, $age, $description, $created_at;
-//    public $login = "1";
-//    public $password, $name, $age, $description, $created_at;
-//    protected $fillable = ['name', 'password', 'info'];//разрешено редактировать только это, остальное запрещено
+    protected $fillable = ['login', 'name', 'password', 'age', 'description'];//разрешено редактировать только это, остальное запрещено
+    protected $table = 'users';
 //    protected $guarded = ['id']; //запрещено редактировать только это, все остальное разрешено
     //created_at - дата создания
     //update_at - дата последнего редактирования
 //    public $timestamps = false;
-//    public $table = "users";
 //    protected $primaryKey = 'id';
 //
 //    public function posts()
