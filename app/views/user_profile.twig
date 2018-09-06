@@ -1,6 +1,8 @@
-<h1>Профиль пользователя</h1>
+<h1>Профиль пользователя {{ login }}</h1>
 <form action="/users/save_profile" method="POST">
     <input type="hidden" name="login" value="{{ login }}">
+    <img src="{{ avatar_path }}" width="200" alt="Аватар">
+    <br>
     Имя: <input type="text" name="name" value="{{ name }}">
     <br>
     Возраст: <input type="number" name="age" min="1" max="120" value="{{ age }}">

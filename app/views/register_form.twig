@@ -1,5 +1,5 @@
 <h1>Регистрация в системе</h1>
-<form action="/users/registration" method="POST">
+<form action="/users/registration" method="POST" enctype="multipart/form-data">
     Логин: <input type="text" name="login">
     <br>
     Пароль: <input type="password" name="password">
@@ -7,6 +7,9 @@
     Имя: <input type="text" name="name">
     <br>
     Возраст: <input type="number" name="age" min="1" max="120">
+    <br>
+    <label for="avatar_file">Аватар: </label>
+    <input type="file" name="avatar_file" id="avatar_file">
     <br>
     О себе
     <br>

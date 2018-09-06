@@ -8,27 +8,24 @@ class Users extends AController
 {
     /**
      * Вывод начальной формы для выбора типа входа в систему (авторизация или регистрация)
-     * @param $requestParameters
      */
-    public function entrance($requestParameters)
+    public function entrance()
     {
         $this->view->twigRender('entrance', []);
     }
 
     /**
      * Вывод формы для авторизации
-     * @param $requestParameters
      */
-    public function logon_form($requestParameters)
+    public function logon_form()
     {
         $this->view->twigRender('logon_form', []);
     }
 
     /**
      * Вывод формы для регистрации
-     * @param $parameters
      */
-    public function register_form($parameters)
+    public function register_form()
     {
         $this->view->twigRender('register_form', []);
     }
@@ -37,12 +34,12 @@ class Users extends AController
      * Авторизация пользователя на сайте
      * @param $parameters
      */
-    public function authorization($parameters)
+    public function authorization()
     {
-        $login = $parameters['login'];
-        $password = $parameters['password'];
+        $login = $_POST['login'];
+        $password = $_POST['password'];
         $isAuthorized = true;
-        if (!User::isUserExists($login)) {
+        if (!User::isExists($login)) {
             $isAuthorized = false;
         };
         $passwordinDB = User::getUserPassword($login);
@@ -50,6 +47,9 @@ class Users extends AController
             $isAuthorized = false;
         }
         if ($isAuthorized) {
+            header('Location: http://mvc/users/profile?login='.$login);
+            die();
+
             $this->showProfile($login);
         } else {
             $this->view->twigRender('authorization_error', []);
@@ -57,36 +57,60 @@ class Users extends AController
     }
 
     /**
-     * Регистраация пользователя на сайте
+     * Регистрация пользователя на сайте
      * @param $params
      */
-    public function registration($params)
+    public function registration()
     {
-        $login = $params['login'];
-        if (User::isUserExists($login)) {
-            $message = "Пользователь <b>{$login}</b> уже зарегистрирован в системе, выберите другой логин.";
+        $login = $_POST['login'];
+        if (User::isExists($login)) {
+            $message = "Пользователь {$login} уже зарегистрирован в системе, выберите другой логин.";
             $this->view->twigRender('registration_error', ['message' => $message]);
             return;
         };
-        $user = User::createUser($params['login'], $params['name'], $params['password'], $params['age'], $params['description']);
+
+        $avatar = 'NO_AVATAR';
+        if (isset($_FILES) && $_FILES['avatar_file']['error'] == 0) {
+//            TODO Нужно добавить проверку типа загружаемого файла - только картинки
+            $avatarPath = APPLICATION_PATH . AVATAR_DIR . $_FILES['avatar_file']['name'];
+            $avatar = AVATAR_DIR . $_FILES['avatar_file']['name'];
+            move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
+        };
+        $user = User::createUser($_POST['login'], $_POST['password'], $_POST['name'], $_POST['age'], $_POST['description'], $avatar);
         if ($user) {
             $this->view->twigRender('registration_success', ['login' => $login]);
         } else {
-            $message = "При регистрации пользователя <b>{$login}</b> возникла ошибка.";
+            $message = "При регистрации пользователя {$login} возникла ошибка.";
             $this->view->twigRender('registration_error', ['message' => $message]);
         };
     }
 
-    protected function showProfile($login)
+    /**
+     * Вывод формы с профилем пользователя
+     * Логин пользователя передается через GET-параметр login
+     */
+    public function profile()
     {
-        $user = User::getUserByLogin($login);
+        $login = $_GET['login'];
+        $user = User::getByLogin($login);
         $name = $user->name;
         $age = $user->age;
         $description = $user->description;
         $userId = $user->id;
+        $avatarPath = '/' . $user->avatar_path;
 
-        $this->view->twigRender('user_profile', ['id' => $userId, 'login' => $login, 'name' => $name, 'age' => $age, 'description' => $description]);
-//        echo "Пользователь $login, $name успешно авторизован";
+        $this->view->twigRender(
+            'user_profile',
+            [
+                'id' => $userId,
+                'login' => $login,
+                'name' => $name,
+                'age' => $age,
+                'description' => $description,
+                'avatar_path' => $avatarPath
+            ]
+        );
+
     }
 
 }

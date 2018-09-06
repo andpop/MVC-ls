@@ -5,7 +5,9 @@ require_once 'app/Core/init.php';
 
 const APPLICATION_PATH = __DIR__.'/';
 
-$routes = explode('/', $_SERVER['REQUEST_URI']);
+$urlPath = parse_url($_SERVER['REQUEST_URI'])['path'];
+//$routes = explode('/', $_SERVER['REQUEST_URI']);
+$routes = explode('/', $urlPath);
 
 $controllerName = 'Users';
 $actionName = 'entrance';
@@ -23,9 +25,6 @@ $class = ucfirst(strtolower($controllerName));
 $fileName = "app/Controllers/{$class}.php";
 $className = "App\\Controllers\\{$class}";
 
-$requestParameters = $_REQUEST;
-unset($requestParameters["route"]);
-
 try {
     if (!file_exists($fileName)) {
         throw new Exception("File not found");
@@ -38,7 +37,7 @@ try {
     }
 
     if (method_exists($controller, $actionName)) {
-        $controller->$actionName($requestParameters);
+        $controller->$actionName();
     } else {
         throw new Exception("Method not found");
     }
