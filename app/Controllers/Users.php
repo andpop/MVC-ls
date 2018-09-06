@@ -26,21 +26,35 @@ class Users extends AController
 
     /**
      * Вывод формы для регистрации
-     * @param $requestParameters
+     * @param $parameters
      */
-    public function register_form($requestParameters)
+    public function register_form($parameters)
     {
         $this->view->twigRender('register_form', []);
     }
 
     /**
      * Авторизация пользователя на сайте
-     * @param $requestParameters
+     * @param $parameters
      */
-    public function authorization($requestParameters)
+    public function authorization($parameters)
     {
-        echo "Попытка авторизации: user={$requestParameters['login']}, password={$requestParameters['password']}";
-
+        $login = $parameters['login'];
+        $password = $parameters['password'];
+        $isAuthorized = true;
+        if (!User::isUserExists($login)) {
+            $isAuthorized = false;
+        };
+        $passwordinDB = User::getUserPassword($login);
+        if ($passwordinDB != $password) {
+            $isAuthorized = false;
+        }
+        if ($isAuthorized) {
+            echo "Пользователь $login успешно авторизован";
+        } else {
+            $this->view->twigRender('authorization_error', []);
+        };
+//        echo "Попытка авторизации: user={$parameters['login']}, password={$parameters['password']}, в базе {$passwordinDB}";
     }
 
     /**
@@ -49,13 +63,19 @@ class Users extends AController
      */
     public function registration($params)
     {
-        echo "Попытка регистрации: user={$params['login']}, password={$params['password']}";
+        $login = $params['login'];
+        if (User::isUserExists($login)) {
+            $message = "Пользователь <b>{$login}</b> уже зарегистрирован в системе, выберите другой логин.";
+            $this->view->twigRender('registration_error', ['message' => $message]);
+            return;
+        };
         $user = User::createUser($params['login'], $params['name'], $params['password'], $params['age'], $params['description']);
+        if ($user) {
+            $this->view->twigRender('registration_success', ['login' => $login]);
+        } else {
+            $message = "При регистрации пользователя <b>{$login}</b> возникла ошибка.";
+            $this->view->twigRender('registration_error', ['message' => $message]);
+        };
     }
 
-    public function save()
-    {
-        echo "Saving user \n";
-        $this->view->twigRender('test', ['test' => 'asd', 'isTest' => true]);
-    }
 }
