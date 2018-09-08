@@ -1,0 +1,13 @@
+<h2>Пользователь {{ login }}</h2>
+
+<form action="/users/save_file" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="login" value="{{ login }}">
+    {#<label for="upload_file"></label>#}
+    <input type="file" name="upload_file" id="upload_file">
+    <br>
+    <button type="submit">Загрузить</button>
+</form>
+
+<hr>
+<h3>Загруженные файлы</h3>
+

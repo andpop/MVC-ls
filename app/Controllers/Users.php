@@ -7,6 +7,16 @@ use App\Models\User as User;
 class Users extends AController
 {
     /**
+     * Проверка авторизованности пользователя по его логину
+     * @param $login
+     * @return bool
+     */
+    protected function checkRights($login)
+    {
+        return (isset($_SESSION['logged_user']) && $_SESSION['logged_user'] == $login);
+    }
+
+    /**
      * Вывод начальной формы для выбора типа входа в систему (авторизация или регистрация)
      */
     public function entrance()
@@ -31,6 +41,20 @@ class Users extends AController
     }
 
     /**
+     * Вывод меню для авторизованного пользователя. Логин передается через POST-параметер
+     */
+    public function menu()
+    {
+        $login = $_GET['login'];
+        if (! $this->checkRights($login)) {
+            $this->view->twigRender('rights_error', []);
+            return;
+        };
+
+        $this->view->twigRender('menu', ['login' => $login]);
+    }
+
+    /**
      * Авторизация пользователя на сайте
      * @param $parameters
      */
@@ -48,7 +72,8 @@ class Users extends AController
             };
         };
         if ($isAuthorized) {
-            header('Location: http://mvc/users/profile?login='.$login);
+            $_SESSION['logged_user'] = $login;
+            header("Location: {$_SERVER['HTTP_ORIGIN']}/users/menu?login={$login}");
         } else {
             $this->view->twigRender('authorization_error', []);
         };
@@ -98,6 +123,11 @@ class Users extends AController
     public function profile()
     {
         $login = $_GET['login'];
+        if (! $this->checkRights($login)) {
+            $this->view->twigRender('rights_error', []);
+            return;
+        };
+
         $user = User::getByLogin($login);
         $name = $user->name;
         $age = $user->age;
@@ -119,4 +149,25 @@ class Users extends AController
 
     }
 
+    public function upload()
+    {
+        $login = $_GET['login'];
+        if (! $this->checkRights($login)) {
+            $this->view->twigRender('rights_error', []);
+            return;
+        };
+
+        $this->view->twigRender('upload_form', ['login' => $login]);
+    }
+
+    public function save_file()
+    {
+        $login = $_POST['login'];
+        if (! $this->checkRights($login)) {
+            $this->view->twigRender('rights_error', []);
+            return;
+        };
+
+        $this->view->twigRender('upload_form', ['login' => $login]);
+    }
 }
