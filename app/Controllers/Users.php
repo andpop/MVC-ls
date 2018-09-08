@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Core\AController;
+use App\Models\File;
 use App\Models\User as User;
 
 class Users extends AController
@@ -29,6 +30,7 @@ class Users extends AController
      */
     public function logon_form()
     {
+//        TODO Сделать сохранение введенных в форму значений при повторном открытии формы
         $this->view->twigRender('logon_form', []);
     }
 
@@ -104,7 +106,7 @@ class Users extends AController
             $avatarPath = APPLICATION_PATH . AVATAR_DIR . $_FILES['avatar_file']['name'];
             $avatar = AVATAR_DIR . $_FILES['avatar_file']['name'];
             move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
-//            TODO Нужно делать имя аватарки уникальным для пользоателей - префиск с логином, например
+//            TODO Нужно делать имя аватарки уникальным для пользователей - префиск с логином, например
         };
 
         $user = User::createUser($login, $passwordHash, $name, $age, $description, $avatar);
@@ -149,6 +151,10 @@ class Users extends AController
 
     }
 
+    /**
+     * Вывод формы для загрузки файлов пользователем и списка его загруженных файлов.
+     * Логин пользователя передается GET-параметром.
+     */
     public function upload()
     {
         $login = $_GET['login'];
@@ -157,17 +163,49 @@ class Users extends AController
             return;
         };
 
-        $this->view->twigRender('upload_form', ['login' => $login]);
+        $userId = User::getIdByLogin($login);
+        $files = File::getByUserId($userId);
+
+        $this->view->twigRender('upload_form', ['login' => $login, 'files' => $files]);
     }
 
+    /**
+     * Перемещение загруженного файла в каталог пользователя и запись информации о загруженном файле в таблицу file.
+     */
     public function save_file()
     {
         $login = $_POST['login'];
+        // Проверяем, на свою ли страницу заходит пользователь
         if (! $this->checkRights($login)) {
             $this->view->twigRender('rights_error', []);
             return;
         };
 
-        $this->view->twigRender('upload_form', ['login' => $login]);
+        $user = User::getByLogin($login);
+        if (!$user) {
+            return;
+        };
+
+//        Создаем каталог для файлов пользователя
+        $imagePath = APPLICATION_PATH . 'img/' . $user->id;
+        if (!file_exists($imagePath)) {
+            mkdir($imagePath);
+        };
+        //Копируем загруженный файл в каталог пользователя
+        if (isset($_FILES) && $_FILES['upload_file']['error'] == 0) {
+//            TODO Нужно добавить проверку типа загружаемого файла - только картинки
+//            Так не работает
+//            $isValidFile = \GUMP::is_valid($_FILES, array('upload_file' => 'required_file|extension,png;jpg'));
+//            if (!$isValidFile) {
+//                echo "ERROR!!!!!";
+//                die();
+//            }
+            $uploadFilePath = $imagePath . '/' . $_FILES['upload_file']['name'];
+            move_uploaded_file($_FILES['upload_file']['tmp_name'], $uploadFilePath);
+            $fileLink = 'img/' . $user->id . '/'. $_FILES['upload_file']['name'];
+            $fileRecord = File::add($user->id, $fileLink);
+        };
+
+        header("Location: {$_SERVER['HTTP_ORIGIN']}/users/upload?login={$login}");
     }
 }

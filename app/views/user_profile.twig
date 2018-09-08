@@ -1,15 +1,18 @@
-<h1>Профиль пользователя {{ login }}</h1>
+<h1>Профиль пользователя: {{ login }}</h1>
 <form action="/users/save_profile" method="POST">
     <input type="hidden" name="login" value="{{ login }}">
     <img src="{{ avatar_path }}" width="200" alt="Аватар">
-    <br>
+    <p>
     Имя: <input type="text" name="name" value="{{ name }}">
-    <br>
+    </p>
+    <p>
     Возраст: <input type="number" name="age" min="1" max="120" value="{{ age }}">
-    <br>
+    </p>
+    <p>
     О себе
     <br>
     <textarea name="description" cols="50" rows="6">{{ description }}</textarea>
+    </p>
     <br>
-    <button type="submit">Сохранить</button>
+    <button type="submit">Сохранить</button> <a href="/users/menu?login={{ login }}">Вернуться в меню</a>
 </form>

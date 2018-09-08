@@ -21,10 +21,30 @@ class User extends Model
         return $user;
     }
 
+    /**
+     * Возвращает объект-пользователя по его логину
+     * @param $login
+     * @return mixed
+     */
     public static function getByLogin($login)
     {
         $user = User::where('login', '=', $login)->first();
         return $user;
+    }
+
+    /**
+     * Возвращае id пользователя по его логину
+     * @param $login
+     * @return int
+     */
+    public static function getIdByLogin($login)
+    {
+        $user = User::where('login', '=', $login)->first();
+        if ($user) {
+            return $user->id;
+        } else {
+            return 0;
+        };
     }
 
     public static function isExists($login)
