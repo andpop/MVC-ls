@@ -41,16 +41,14 @@ class Users extends AController
         $isAuthorized = true;
         if (!User::isExists($login)) {
             $isAuthorized = false;
+        } else {
+            $passwordHash = User::getPasswordHash($login);
+            if (!password_verify($password, $passwordHash)) {
+                $isAuthorized = false;
+            };
         };
-        $passwordinDB = User::getUserPassword($login);
-        if ($passwordinDB != $password) {
-            $isAuthorized = false;
-        }
         if ($isAuthorized) {
             header('Location: http://mvc/users/profile?login='.$login);
-            die();
-
-            $this->showProfile($login);
         } else {
             $this->view->twigRender('authorization_error', []);
         };
@@ -69,14 +67,22 @@ class Users extends AController
             return;
         };
 
+//        TODO нужно сделать проверку на непустые значения атрибутов пользователя и очистить их
+        $name = $_POST['name'];
+        $age = $_POST['age'];
+        $description = $_POST['description'];
+        $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
         $avatar = 'NO_AVATAR';
         if (isset($_FILES) && $_FILES['avatar_file']['error'] == 0) {
 //            TODO Нужно добавить проверку типа загружаемого файла - только картинки
             $avatarPath = APPLICATION_PATH . AVATAR_DIR . $_FILES['avatar_file']['name'];
             $avatar = AVATAR_DIR . $_FILES['avatar_file']['name'];
             move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
+//            TODO Нужно делать имя аватарки уникальным для пользоателей - префиск с логином, например
         };
-        $user = User::createUser($_POST['login'], $_POST['password'], $_POST['name'], $_POST['age'], $_POST['description'], $avatar);
+
+        $user = User::createUser($login, $passwordHash, $name, $age, $description, $avatar);
         if ($user) {
             $this->view->twigRender('registration_success', ['login' => $login]);
         } else {

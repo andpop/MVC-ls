@@ -35,10 +35,13 @@ class User extends Model
         return false;
     }
 
-    public static function getUserPassword($login)
+    public static function getPasswordHash($login)
     {
         $user = User::where('login', '=', $login)->first();
-        return $user->password;
+        if ($user) {
+            return $user->password;
+        };
+        return '';
     }
 
 }
