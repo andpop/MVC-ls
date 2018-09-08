@@ -1,0 +1,24 @@
+<h2>Зарегистрированные пользователи</h2>
+<a href="/admin/users?sort_age=asc">Сначала молодежь</a> <a href="/admin/users?sort_age=desc">Сначала опытные</a>
+<table>
+    <thead>
+        <tr>
+            <td>Логин</td><td>Имя</td><td>Возраст</td><td>Категория</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.login }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.age }}</td>
+                {% if user.age > 18 %}
+                    <td>Совершеннолетний</td>
+                {% else %}
+                    <td>Несовершеннолетний</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

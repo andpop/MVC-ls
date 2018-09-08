@@ -14,6 +14,8 @@
 <ol>
     {% for file in files %}
         <li>{{ file.file_path }}</li>
+    {% else %}
+        Вы еще не загружали файлы.
     {% endfor %}
 </ol>
 
