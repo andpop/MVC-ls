@@ -1,12 +1,17 @@
 <h1>Профиль пользователя: {{ login }}</h1>
-<form action="/users/save_profile" method="POST">
+<span style="color: red">{{ error_message }}</span>
+<span style="color: green">{{ info_message }}</span>
+<form action="/users/save_profile" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="{{ id }}">
     <input type="hidden" name="login" value="{{ login }}">
     <img src="{{ avatar_path }}" width="200" alt="Аватар">
+    <label for="avatar_file"></label>
+    <input type="file" name="avatar_file" id="avatar_file">
     <p>
-    Имя: <input type="text" name="name" value="{{ name }}">
+    Имя: <input type="text" name="name" value="{{ name }}" required>
     </p>
     <p>
-    Возраст: <input type="number" name="age" min="1" max="120" value="{{ age }}">
+    Возраст: <input type="number" name="age" min="1" max="120" value="{{ age }}" required>
     </p>
     <p>
     О себе

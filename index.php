@@ -3,7 +3,7 @@ session_start();
 require "vendor/autoload.php";
 require_once 'app/Core/config.php';
 require_once 'app/Core/init.php';
-
+require_once 'app/Core/functions.php';
 const APPLICATION_PATH = __DIR__.'/';
 
 $urlPath = parse_url($_SERVER['REQUEST_URI'])['path'];

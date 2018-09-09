@@ -39,7 +39,14 @@ class Users extends AController
      */
     public function register_form()
     {
-        $this->view->twigRender('register_form', []);
+        $data = [];
+        $data['message'] = '';
+        $data['login'] = '';
+        $data['name'] = '';
+        $data['age'] = '';
+        $data['description'] = '';
+
+        $this->view->twigRender('register_form', $data);
     }
 
     /**
@@ -94,22 +101,38 @@ class Users extends AController
             return;
         };
 
-//        TODO нужно сделать проверку на непустые значения атрибутов пользователя и очистить их
-        $outMessage = '';
-        $data = [];
-
+        $errorMessage = '';
         $isBadParameters = false;
+        if (empty($_POST['login'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указан логин. ";
+        };
         if (empty($_POST['name'])) {
             $isBadParameters = true;
-            $outMessage .= "Не указано имя пользователя. <br>";
+            $errorMessage .= "Не указано имя. ";
+        };
+        if (empty($_POST['age'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указан возраст. ";
+        };
+        if ($_FILES['avatar_file']['tmp_name']) {
+            if (!checkImageFile($_FILES['avatar_file']['tmp_name'])) {
+                $isBadParameters = true;
+                $errorMessage .= "Можно загружать только изображения. ";
+            }
         };
 
         if ($isBadParameters) {
+            $data = [];
             $data['status'] = 'VALIDATE_ERROR';
-            $data['message'] = '<b>Вы не заполнили необходимые поля:</b> <br>'.$outMessage;
-            $response = json_encode($data);
-            $this->view->twigRender('ajax_response', ['response' => $response]);
-            die();
+            $data['message'] = $errorMessage;
+            $data['login'] = $_POST['login'];
+            $data['name'] = $_POST['name'];
+            $data['age'] = $_POST['age'];
+            $data['description'] = $_POST['description'];
+
+            $this->view->twigRender('register_form', $data);
+            return;
         }
 
         $name = $_POST['name'];
@@ -119,11 +142,9 @@ class Users extends AController
 
         $avatar = 'NO_AVATAR';
         if (isset($_FILES) && $_FILES['avatar_file']['error'] == 0) {
-//            TODO Нужно добавить проверку типа загружаемого файла - только картинки
             $avatarPath = APPLICATION_PATH . AVATAR_DIR . $_FILES['avatar_file']['name'];
             $avatar = AVATAR_DIR . $_FILES['avatar_file']['name'];
             move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
-//            TODO Нужно делать имя аватарки уникальным для пользователей - префиск с логином, например
         };
 
         $user = User::createUser($login, $passwordHash, $name, $age, $description, $avatar);
@@ -148,25 +169,86 @@ class Users extends AController
         };
 
         $user = User::getByLogin($login);
-        $name = $user->name;
-        $age = $user->age;
-        $description = $user->description;
-        $userId = $user->id;
-        $avatarPath = '/' . $user->avatar_path;
+        $data = [];
+        $data['message'] = '';
+        $data['id'] = $user->id;
+        $data['login'] = $login;
+        $data['name'] = $user->name;
+        $data['age'] = $user->age;
+        $data['description'] = $user->description;
+        $data['avatar_path'] = $user->avatar_path;
 
-        $this->view->twigRender(
-            'user_profile',
-            [
-                'id' => $userId,
-                'login' => $login,
-                'name' => $name,
-                'age' => $age,
-                'description' => $description,
-                'avatar_path' => $avatarPath
-            ]
-        );
-
+        $this->view->twigRender('user_profile', $data);
     }
+
+    /**
+     * Регистрация пользователя на сайте
+     * @param $params
+     */
+    public function save_profile()
+    {
+        if (isset($_POST['id'])) {
+            $userId = $_POST['id'];
+        };
+
+        $errorMessage = '';
+        $isBadParameters = false;
+        if (!isset($_POST['id']) || empty($_POST['id'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указан идентификатор пользователя. ";
+        };
+        if (!isset($_POST['login']) || empty($_POST['login'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указан логин. ";
+        };
+        if (!isset($_POST['name']) || empty($_POST['name'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указано имя. ";
+        };
+        if (!isset($_POST['age']) || empty($_POST['age'])) {
+        };
+        if ($_FILES['avatar_file']['tmp_name']) {
+            if (!checkImageFile($_FILES['avatar_file']['tmp_name'])) {
+                $isBadParameters = true;
+                $errorMessage .= "Можно загружать только изображения. ";
+            }
+        };
+
+        if ($isBadParameters) {
+            $data = [];
+            $data['status'] = 'VALIDATE_ERROR';
+            $data['error_message'] = $errorMessage;
+            $data['info_message'] = '';
+            $data['id'] = $_POST['id'];
+            $data['login'] = $_POST['login'];
+            $data['name'] = $_POST['name'];
+            $data['age'] = $_POST['age'];
+            $data['description'] = $_POST['description'];
+
+            $this->view->twigRender('user_profile', $data);
+            return;
+        };
+
+        $isAvatarChanged = false;
+        if (isset($_FILES) && $_FILES['avatar_file']['error'] == 0) {
+            $avatarPath = APPLICATION_PATH . AVATAR_DIR . $_FILES['avatar_file']['name'];
+            $avatar = AVATAR_DIR . $_FILES['avatar_file']['name'];
+            move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
+            $isAvatarChanged = true;
+        };
+
+        $user = User::find($userId);
+        $user->name = $_POST['name'];
+        $user->age = $_POST['age'];
+        $user->description = $_POST['description'];
+        if ($isAvatarChanged) {
+            $user->avatar_path = $avatar;
+        }
+        $user->save();
+
+        header("Location: {$_SERVER['HTTP_ORIGIN']}/users/profile?login={$_POST['login']}");
+    }
+
 
     /**
      * Вывод формы для загрузки файлов пользователем и списка его загруженных файлов.
@@ -219,7 +301,7 @@ class Users extends AController
 //            }
             $uploadFilePath = $imagePath . '/' . $_FILES['upload_file']['name'];
             move_uploaded_file($_FILES['upload_file']['tmp_name'], $uploadFilePath);
-            $fileLink = 'img/' . $user->id . '/'. $_FILES['upload_file']['name'];
+            $fileLink = '/img/' . $user->id . '/'. $_FILES['upload_file']['name'];
             $fileRecord = File::add($user->id, $fileLink);
         };
 

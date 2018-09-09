@@ -13,7 +13,7 @@
 <h3>Загруженные файлы</h3>
 <ol>
     {% for file in files %}
-        <li>{{ file.file_path }}</li>
+        <li><img src="{{ file.file_path }}" width="100" alt="Загруженная картинка">{{ file.file_path }}</li>
     {% else %}
         Вы еще не загружали файлы.
     {% endfor %}

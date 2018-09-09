@@ -1,4 +1,5 @@
 <h2>Пользователь {{ login }}</h2>
-<a href="/users/profile?login={{ login }}">Показать профиль</a>
-<br>
-<a href="/users/upload?login={{ login }}">Загруженные файлы</a>
+<ul>
+    <li><a href="/users/profile?login={{ login }}">Показать профиль</a></li>
+    <li><a href="/users/upload?login={{ login }}">Загруженные файлы</a></li>
+</ul>
