@@ -7,7 +7,6 @@ require_once 'app/Core/functions.php';
 const APPLICATION_PATH = __DIR__.'/';
 
 $urlPath = parse_url($_SERVER['REQUEST_URI'])['path'];
-//$routes = explode('/', $_SERVER['REQUEST_URI']);
 $routes = explode('/', $urlPath);
 
 $controllerName = 'Users';
