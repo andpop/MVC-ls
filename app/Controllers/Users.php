@@ -30,7 +30,6 @@ class Users extends AController
      */
     public function logon_form()
     {
-//        TODO Сделать сохранение введенных в форму значений при повторном открытии формы
         $this->view->twigRender('logon_form', []);
     }
 
@@ -206,6 +205,8 @@ class Users extends AController
             $errorMessage .= "Не указано имя. ";
         };
         if (!isset($_POST['age']) || empty($_POST['age'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указано возраст. ";
         };
         if ($_FILES['avatar_file']['tmp_name']) {
             if (!checkImageFile($_FILES['avatar_file']['tmp_name'])) {
