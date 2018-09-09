@@ -95,6 +95,23 @@ class Users extends AController
         };
 
 //        TODO нужно сделать проверку на непустые значения атрибутов пользователя и очистить их
+        $outMessage = '';
+        $data = [];
+
+        $isBadParameters = false;
+        if (empty($_POST['name'])) {
+            $isBadParameters = true;
+            $outMessage .= "Не указано имя пользователя. <br>";
+        };
+
+        if ($isBadParameters) {
+            $data['status'] = 'VALIDATE_ERROR';
+            $data['message'] = '<b>Вы не заполнили необходимые поля:</b> <br>'.$outMessage;
+            $response = json_encode($data);
+            $this->view->twigRender('ajax_response', ['response' => $response]);
+            die();
+        }
+
         $name = $_POST['name'];
         $age = $_POST['age'];
         $description = $_POST['description'];
