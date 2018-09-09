@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Сен 08 2018 г., 23:56
+-- Время создания: Сен 10 2018 г., 01:17
 -- Версия сервера: 5.7.23-0ubuntu0.16.04.1
 -- Версия PHP: 7.0.25-0ubuntu0.16.04.1
 
@@ -46,7 +46,10 @@ INSERT INTO `files` (`id`, `user_id`, `file_path`, `created_at`, `updated_at`) V
 (6, 6, 'img/6/work-1.png', '2018-09-08 18:30:13', '2018-09-08 18:30:13'),
 (7, 7, 'img/7/work-2.png', '2018-09-08 18:52:49', '2018-09-08 18:52:49'),
 (8, 7, 'img/7/author-full.jpg', '2018-09-08 19:20:18', '2018-09-08 19:20:18'),
-(9, 7, 'img/7/reg-util.js', '2018-09-08 19:20:39', '2018-09-08 19:20:39');
+(9, 7, 'img/7/reg-util.js', '2018-09-08 19:20:39', '2018-09-08 19:20:39'),
+(10, 18, 'img/18/team-mate.jpg', '2018-09-09 19:54:51', '2018-09-09 19:54:51'),
+(11, 19, 'img/19/team-bg.jpg', '2018-09-09 21:17:44', '2018-09-09 21:17:44'),
+(12, 19, '/img/19/team-mate.jpg', '2018-09-09 21:40:57', '2018-09-09 21:40:57');
 
 -- --------------------------------------------------------
 
@@ -84,7 +87,9 @@ INSERT INTO `users` (`id`, `login`, `password`, `name`, `age`, `description`, `a
 (14, 'oadams', '$2y$10$BGodgMc4sjV/6.8nw6JlD./wKo5gzcOaXAOjPhfBBrZb6Dkl7G/me', 'Rachel Abshire Sr.', 89, 'Voluptatem eaque iure unde delectus rerum. Possimus in sed recusandae. Cum magni voluptatibus eveniet est.', 'http://mvc/img/avatars/work-1.png', '1981-10-04 09:46:04', '2018-09-08 20:53:33'),
 (15, 'friesen.destiny', '$2y$10$ugvMlngBs4XXUD7IjrN4ceMX.vk0vtB876/RaNWUFIhZqz11Yln0C', 'Casper Harber', 24, 'Molestiae illo praesentium ex ut consequatur est omnis. Et sint perspiciatis suscipit accusantium qui. Ipsa totam similique omnis vero voluptas. Odit iusto pariatur qui vel ut.', 'http://mvc/img/avatars/work-1.png', '1998-05-01 11:43:04', '2018-09-08 20:53:33'),
 (16, 'patience84', '$2y$10$XVSQ1v.btUI0IZ1IDBkcBeJSHTuPfJrALy4cRHCXRFxRYF.V.5S8m', 'Sedrick Cartwright', 102, 'Aperiam sunt delectus est molestias placeat numquam. Incidunt architecto nobis cum. Corrupti alias rem magnam aliquam. Voluptate inventore consectetur voluptatem fuga magni adipisci.', 'http://mvc/img/avatars/work-1.png', '2016-08-21 00:58:34', '2018-09-08 20:53:33'),
-(17, 'ricardo.greenfelder', '$2y$10$x7kvSNFvqlt45BOCKY/oTOrurSfHX6/frAzKuohlYLrq6HVbwrh2.', 'Miss Daphne Gleichner', 97, 'Et quibusdam dolor sint consequuntur. Nemo consequatur quo provident quam atque consequuntur quia. Veritatis earum eos enim assumenda nam error atque.', 'http://mvc/img/avatars/work-1.png', '2001-12-01 22:11:30', '2018-09-08 20:53:33');
+(17, 'ricardo.greenfelder', '$2y$10$x7kvSNFvqlt45BOCKY/oTOrurSfHX6/frAzKuohlYLrq6HVbwrh2.', 'Miss Daphne Gleichner', 97, 'Et quibusdam dolor sint consequuntur. Nemo consequatur quo provident quam atque consequuntur quia. Veritatis earum eos enim assumenda nam error atque.', 'http://mvc/img/avatars/work-1.png', '2001-12-01 22:11:30', '2018-09-08 20:53:33'),
+(19, 'klo', '$2y$10$3kjQCiTajjTqU6uD8mfAVe1ylJZ4vKVvaqr6hB9oV5F5nVavXP6du', 'Петя', 20, 'Я молодец', '/img/avatars/team-mate.jpg', '2018-09-09 21:04:19', '2018-09-09 21:52:36'),
+(20, 'andpop', '$2y$10$TFpXzJhnfferZAkw98H/xeanmcCqaikmO6kbZ3gj7HNqY/hbkwdXC', 'Андрей', 43, 'Обо мне.', '/img/avatars/photo-7.png', '2018-09-09 21:56:59', '2018-09-09 21:57:54');
 
 --
 -- Индексы сохранённых таблиц
@@ -110,12 +115,12 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
