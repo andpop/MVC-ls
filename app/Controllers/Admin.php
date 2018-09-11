@@ -62,7 +62,7 @@ class Admin extends AController
             return;
         }
         if (!User::checkEmailUnique($id, $_POST['email'])) {
-            $message = "Почтовый ящик {$_POST['email']} уже зарегитрирован в системе.";
+            $message = "Почтовый ящик {$_POST['email']} уже зарегистрирован в системе.";
             $this->view->twigRender('edit_profile_error', ['message' => $message]);
             return;
         }
