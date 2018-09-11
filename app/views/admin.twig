@@ -17,6 +17,7 @@
                 {% else %}
                     <td>Несовершеннолетний</td>
                 {% endif %}
+                <td><a href="/admin/edit?id={{ user.id }}">Редактировать</a></td>
             </tr>
         {% endfor %}
     </tbody>

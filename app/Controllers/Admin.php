@@ -21,4 +21,12 @@ class Admin extends AController
 
         $this->view->twigRender('admin', ['users' => $users]);
     }
+
+    public function edit()
+    {
+        $id = $_GET['id'];
+        $user = User::find($id)->toArray();
+        $data = array_merge($user, ['message' => '']);
+        $this->view->twigRender('edit_form', ['data' => $data]);
+    }
 }

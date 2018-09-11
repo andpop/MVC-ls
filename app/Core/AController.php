@@ -1,7 +1,7 @@
 <?php
 namespace App\Core;
 
-class AController
+abstract class AController
 {
     protected $view;
 
