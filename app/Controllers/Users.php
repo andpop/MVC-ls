@@ -35,15 +35,24 @@ class Users extends AController
 
     /**
      * Вывод формы для регистрации
+     * Если GET-параметр reg_type == user, то пользователь регистрируется самостоятельно (по умолчанию)
+     * Если GET-параметр reg_type == admin, то пользователя заводит администратор
+
      */
     public function register_form()
     {
+        $registrationType = 'user';
+        if (isset($_GET['reg_type']) && $_GET['reg_type'] == 'admin') {
+            $registrationType = 'admin';
+        };
+
         $data = [];
         $data['message'] = '';
         $data['login'] = '';
         $data['name'] = '';
         $data['age'] = '';
         $data['description'] = '';
+        $data['reg_type'] = $registrationType;
 
         $this->view->twigRender('register_form', $data);
     }
@@ -64,14 +73,13 @@ class Users extends AController
 
     /**
      * Авторизация пользователя на сайте
-     * @param $parameters
      */
     public function authorization()
     {
         $login = $_POST['login'];
         $password = $_POST['password'];
         $isAuthorized = true;
-        if (!User::isExists($login)) {
+        if (!User::loginExists($login)) {
             $isAuthorized = false;
         } else {
             $passwordHash = User::getPasswordHash($login);
@@ -88,14 +96,21 @@ class Users extends AController
     }
 
     /**
-     * Регистрация пользователя на сайте
-     * @param $params
+     * Запись в БД данных из формы регистрации нового пользователя
+     * Если GET-параметр reg_type == user, то пользователь регистрируется самостоятельно (по умолчанию)
+     * Если GET-параметр reg_type == admin, то пользователя заводит администратор
      */
     public function registration()
     {
         $login = $_POST['login'];
-        if (User::isExists($login)) {
+        $email = $_POST['email'];
+        if (User::loginExists($login)) {
             $message = "Пользователь {$login} уже зарегистрирован в системе, выберите другой логин.";
+            $this->view->twigRender('registration_error', ['message' => $message]);
+            return;
+        };
+        if (User::emailExists($email)) {
+            $message = "Почтовый ящик {$email} уже зарегистрирован в системе, выберите другой email.";
             $this->view->twigRender('registration_error', ['message' => $message]);
             return;
         };
@@ -109,6 +124,10 @@ class Users extends AController
         if (empty($_POST['name'])) {
             $isBadParameters = true;
             $errorMessage .= "Не указано имя. ";
+        };
+        if (empty($_POST['email'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указан email. ";
         };
         if (empty($_POST['age'])) {
             $isBadParameters = true;
@@ -127,6 +146,7 @@ class Users extends AController
             $data['message'] = $errorMessage;
             $data['login'] = $_POST['login'];
             $data['name'] = $_POST['name'];
+            $data['email'] = $_POST['email'];
             $data['age'] = $_POST['age'];
             $data['description'] = $_POST['description'];
 
@@ -135,6 +155,7 @@ class Users extends AController
         }
 
         $name = $_POST['name'];
+        $email = $_POST['email'];
         $age = $_POST['age'];
         $description = $_POST['description'];
         $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -146,7 +167,18 @@ class Users extends AController
             move_uploaded_file($_FILES['avatar_file']['tmp_name'], $avatarPath);
         };
 
-        $user = User::createUser($login, $passwordHash, $name, $age, $description, $avatar);
+        $user = User::createUser($login, $passwordHash, $name, $email, $age, $description, $avatar);
+
+        $registrationType = 'user';
+
+        if (isset($_GET['reg_type']) && $_GET['reg_type'] == 'admin') {
+            $registrationType = 'admin';
+        };
+
+        if ($registrationType == 'admin') {
+            header("Location: {$_SERVER['HTTP_ORIGIN']}/admin/users");
+        };
+
         if ($user) {
             $this->view->twigRender('registration_success', ['login' => $login]);
         } else {
@@ -173,6 +205,7 @@ class Users extends AController
         $data['id'] = $user->id;
         $data['login'] = $login;
         $data['name'] = $user->name;
+        $data['email'] = $user->email;
         $data['age'] = $user->age;
         $data['description'] = $user->description;
         $data['avatar_path'] = $user->avatar_path;
@@ -181,13 +214,14 @@ class Users extends AController
     }
 
     /**
-     * Регистрация пользователя на сайте
-     * @param $params
+     * Сохранение в БД данных из формы редактирования профиля пользователя
      */
     public function save_profile()
     {
         if (isset($_POST['id'])) {
             $userId = $_POST['id'];
+        } else {
+            $userId = 0;
         };
 
         $errorMessage = '';
@@ -204,6 +238,10 @@ class Users extends AController
             $isBadParameters = true;
             $errorMessage .= "Не указано имя. ";
         };
+        if (!isset($_POST['email']) || empty($_POST['email'])) {
+            $isBadParameters = true;
+            $errorMessage .= "Не указано имя. ";
+        };
         if (!isset($_POST['age']) || empty($_POST['age'])) {
             $isBadParameters = true;
             $errorMessage .= "Не указано возраст. ";
@@ -214,6 +252,11 @@ class Users extends AController
                 $errorMessage .= "Можно загружать только изображения. ";
             }
         };
+        $userWithEmail = User::getByEmail($_POST['email']);
+        if ($userWithEmail && ($userWithEmail->id != $userId)) {
+            $isBadParameters = true;
+            $errorMessage .= "Почтовый ящик {$_POST['email']} уже зарегистрирован в системе, выберите другой email.";
+        };
 
         if ($isBadParameters) {
             $data = [];
@@ -223,6 +266,7 @@ class Users extends AController
             $data['id'] = $_POST['id'];
             $data['login'] = $_POST['login'];
             $data['name'] = $_POST['name'];
+            $data['email'] = $_POST['email'];
             $data['age'] = $_POST['age'];
             $data['description'] = $_POST['description'];
 
@@ -240,6 +284,7 @@ class Users extends AController
 
         $user = User::find($userId);
         $user->name = $_POST['name'];
+        $user->email = $_POST['email'];
         $user->age = $_POST['age'];
         $user->description = $_POST['description'];
         if ($isAvatarChanged) {

@@ -1,9 +1,12 @@
 <h2>Зарегистрированные пользователи</h2>
+<p>
+    <a href="/users/register_form?reg_type=admin">Добавить нового пользователя</a>
+</p>
 <a href="/admin/users?sort_age=asc">Сначала молодежь</a> <a href="/admin/users?sort_age=desc">Сначала опытные</a>
 <table>
     <thead>
-        <tr>
-            <td>Логин</td><td>Имя</td><td>Возраст</td><td>Категория</td>
+        <tr style="font-weight: bold">
+            <td>Логин</td><td>Имя</td><td>Email</td><td>Возраст</td><td>Категория</td>
         </tr>
     </thead>
     <tbody>
@@ -11,13 +14,14 @@
             <tr>
                 <td>{{ user.login }}</td>
                 <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
                 <td>{{ user.age }}</td>
                 {% if user.age > 18 %}
                     <td>Совершеннолетний</td>
                 {% else %}
                     <td>Несовершеннолетний</td>
                 {% endif %}
-                <td><a href="/admin/edit?id={{ user.id }}">Редактировать</a></td>
+                <td><a href="/admin/edit_user?id={{ user.id }}">Редактировать</a></td>
             </tr>
         {% endfor %}
     </tbody>

@@ -1,8 +1,10 @@
 <h1>Данные о пользователе</h1>
 <span style="color: red">{{ message }}</span>
 <form action="/admin/save_user" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="{{ data.id }}">
     <p>Логин: <input type="text" name="login" required value="{{ data.login }}"></p>
     <p>Имя: <input type="text" name="name" value="{{ data.name }}" required></p>
+    <p>Email: <input type="text" name="email" value="{{ data.email }}" required></p>
     <p>Возраст: <input type="number" name="age" min="1" max="120" value="{{ data.age }}" required></p>
     <p>
         Описание

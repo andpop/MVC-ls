@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model as Model;
 class User extends Model
 {
     protected $table = 'users';
-    protected $fillable = ['login', 'password', 'name', 'age', 'avatar_path', 'description'];
+    protected $fillable = ['login', 'password', 'name', 'email', 'age', 'avatar_path', 'description'];
 
     /**
      * Возвращает массив с информацией о всех пользователях
@@ -37,17 +37,19 @@ class User extends Model
      * @param $login
      * @param $password
      * @param $name
+     * @param $email
      * @param $age
      * @param $description
      * @param $avatarPath
      * @return mixed
      */
-    public static function createUser($login, $password, $name, $age, $description, $avatarPath)
+    public static function createUser($login, $password, $name, $email, $age, $description, $avatarPath)
     {
         $user = User::create([
             'login' => $login,
             'password' => $password,
             'name' => $name,
+            'email' => $email,
             'age' => $age,
             'description' => $description,
             'avatar_path' => $avatarPath
@@ -67,6 +69,17 @@ class User extends Model
     }
 
     /**
+     * Возвращает объект-пользователя по его email
+     * @param $email
+     * @return mixed
+     */
+    public static function getByEmail($email)
+    {
+        $user = User::where('email', '=', $email)->first();
+        return $user;
+    }
+
+    /**
      * Возвращае id пользователя по его логину
      * @param $login
      * @return int
@@ -81,9 +94,27 @@ class User extends Model
         };
     }
 
-    public static function isExists($login)
+    /**
+     * Проверка существования логина в базе (для регистрации нового пользователя)
+     * @param $login
+     * @return bool
+     */
+    public static function loginExists($login)
     {
         $user = User::getByLogin($login);
+
+        if ($user) return true;
+        return false;
+    }
+
+    /**
+     * Проверка существования email в базе (для регистрации нового пользователя)
+     * @param $email
+     * @return bool
+     */
+    public static function emailExists($email)
+    {
+        $user = User::getByEmail($email);
 
         if ($user) return true;
         return false;
@@ -98,4 +129,32 @@ class User extends Model
         return '';
     }
 
+    /**
+     * Проверка, является ли уникальным в БД логин пользователя с идентификатором $userId
+     * @param $userId
+     * @param $login
+     * @return bool
+     */
+    public static function checkLoginUnique($userId, $login)
+    {
+        $user = User::where('login', '=', $login)
+            ->where('id', '!=', $userId)
+            ->first();
+        if ($user) return false;
+        return true;
+    }
+    /**
+     * Проверка, является ли уникальным в БД email пользователя с идентификатором $userId
+     * @param $userId
+     * @param $email
+     * @return bool
+     */
+    public static function checkEmailUnique($userId, $email)
+    {
+        $user = User::where('email', '=', $email)
+            ->where('id', '!=', $userId)
+            ->first();
+        if ($user) return false;
+        return true;
+    }
 }
